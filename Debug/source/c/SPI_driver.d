@@ -1,7 +1,7 @@
 # FIXED
 
 source/c/SPI_driver.obj: ../source/c/SPI_driver.c
-source/c/SPI_driver.obj: Q:/workspace_v7/S5e_APP6/includes/SPI_driver.h
+source/c/SPI_driver.obj: E:/S5/APP6/S5e_APP6/includes/SPI_driver.h
 source/c/SPI_driver.obj: C:/ti/ccsv7/tools/compiler/c6000_7.4.20/include/stdio.h
 source/c/SPI_driver.obj: C:/ti/ccsv7/tools/compiler/c6000_7.4.20/include/linkage.h
 source/c/SPI_driver.obj: C:/ti/ccsv7/tools/compiler/c6000_7.4.20/include/stdarg.h
@@ -12,7 +12,7 @@ source/c/SPI_driver.obj: C:/ti/ccsv7/tools/compiler/c6000_7.4.20/include/stdarg.
 source/c/SPI_driver.obj: C:/ti/ccsv7/tools/compiler/c6000_7.4.20/include/_lock.h
 
 ../source/c/SPI_driver.c: 
-Q:/workspace_v7/S5e_APP6/includes/SPI_driver.h: 
+E:/S5/APP6/S5e_APP6/includes/SPI_driver.h: 
 C:/ti/ccsv7/tools/compiler/c6000_7.4.20/include/stdio.h: 
 C:/ti/ccsv7/tools/compiler/c6000_7.4.20/include/linkage.h: 
 C:/ti/ccsv7/tools/compiler/c6000_7.4.20/include/stdarg.h: 

@@ -17,7 +17,7 @@ source/c/C6713Helper_UdeS.obj: C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_irq.h
 source/c/C6713Helper_UdeS.obj: C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_irqhal.h
 source/c/C6713Helper_UdeS.obj: C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_timer.h
 source/c/C6713Helper_UdeS.obj: C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_timerhal.h
-source/c/C6713Helper_UdeS.obj: Q:/workspace_v7/S5e_APP6/includes/C6713Helper_UdeS.h
+source/c/C6713Helper_UdeS.obj: E:/S5/APP6/S5e_APP6/includes/C6713Helper_UdeS.h
 source/c/C6713Helper_UdeS.obj: C:/ti/dsk6713/include/dsk6713_aic23.h
 source/c/C6713Helper_UdeS.obj: C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_mcbsp.h
 source/c/C6713Helper_UdeS.obj: C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_mcbsphal.h
@@ -39,7 +39,7 @@ C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_irq.h:
 C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_irqhal.h: 
 C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_timer.h: 
 C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_timerhal.h: 
-Q:/workspace_v7/S5e_APP6/includes/C6713Helper_UdeS.h: 
+E:/S5/APP6/S5e_APP6/includes/C6713Helper_UdeS.h: 
 C:/ti/dsk6713/include/dsk6713_aic23.h: 
 C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_mcbsp.h: 
 C:/ti/ccsv7/ccs_base/C6xCSL/include/csl_mcbsphal.h: 
