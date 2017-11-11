@@ -1,17 +1,15 @@
 /********************************************************
 **  Session 5 - APP6 - Téléphonie par DSP
 **  Fichier SPI_driver.c
-**  Auteurs : < vos noms >
-**  Date : < derniere modification >
+**  Auteurs : Anthony Parris & Édouard Denommée
 ********************************************************/
-
 
 /***************************************************************************
 	Include headers :
 ***************************************************************************/
-
-//#include "something.h"
-
+#include <csl.h>
+#include <csl_mcbsp.h>
+#include <dsk6173.h>
 
 /***************************************************************************
 	Include Module Header :
@@ -30,37 +28,49 @@ extern far void vectors();   // Vecteurs d'interruption
 	Private macros and constants :
 ****************************************************************************/
 
-// These defines are only valid is this .c
 
-//#define something somethingelse
 
 /****************************************************************************
 	Private Types :
 ****************************************************************************/
 
-// These type declaration are only valid in this .c
+
 
 /****************************************************************************
 	Private global variables :
 ****************************************************************************/
 
+MCBSP_Handle hMcbsp0;
 
 /****************************************************************************
 	Private functions :
 ****************************************************************************/
 
-// these function can only be called by this .c
-// Use static keyword
+
 
 /****************************************************************************
 	Public functions :
 ****************************************************************************/
 
-// Function description here ...
-void SPI_init(void)
+void SPI_init()
 {
+    /* enable NMI and GI */
+    IRQ_nmiEnable();
+    IRQ_globalEnable();
 
-	return;
+    /* point to the IRQ vector table */
+    IRQ_setVecs(vectors); // CCS Error does not result in compilation fault
+    IRQ_reset(IRQ_EVT_RINT0);   // Temporarly disable selected interrupt
+
+    hMcbsp0 = MCBSP_open(MCBSP_DEV0, MCBSP_OPEN_RESET);
+
+
+
+    // Renable selected interrupt
+    IRQ_enable(IRQ_EVT_RINT0);
+
+    /* Wake up the McBSP as receiver */
+    MCBSP_enableRcv(hMcbsp0);
 }
 
 
@@ -68,4 +78,7 @@ void SPI_init(void)
 	ISR :
 ****************************************************************************/
 
-// end of SPI_driver.c
+interrupt void spi_receive_int0(void)
+{
+
+}

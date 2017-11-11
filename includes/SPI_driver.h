@@ -42,7 +42,6 @@
 	Types declaration here :
 ***************************************************************************/
 
-// typedef, struct, enum, union, etc.
 
 /***************************************************************************
 	Global variables declaration :
@@ -57,12 +56,11 @@
 ***************************************************************************/
 
 // Function description here ...
-EXTERN void SPI_init(void);
+EXTERN void SPI_init();
 
 // ajoutez vos prototype de fonction ici
 
 #undef SPI_DRIVER_MODULE_IMPORT
-
 #undef EXTERN
 
 #endif // end of #ifndef _SPI_MODULE_
