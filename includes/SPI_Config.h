@@ -18,6 +18,6 @@
     #define EXTERN extern
 #endif
 
-EXTERN McBSP_Config MCBSP0_SPI_Cfg;
+//EXTERN McBSP_Config MCBSP0_SPI_Cfg;
 
 #endif /* INCLUDES_SPI_CONFIG_H_ */
