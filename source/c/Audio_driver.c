@@ -13,6 +13,8 @@
 #include <dsk6713_led.h>
 #include <dsk6713_dip.h>
 
+#include "playback.h"
+
 /***************************************************************************
 	Include Module Header :
 ***************************************************************************/
@@ -28,6 +30,9 @@
 extern void vectors();   // Vecteurs d'interruption
 extern unsigned char int2ulaw(short linear);
 extern int ulaw2int(unsigned char log);
+
+extern bool isRecording;
+extern bool isPlaying;
 
 volatile unsigned inData;
 volatile unsigned outData;
@@ -82,14 +87,13 @@ void Audio_init(void)
 
     /*DSK6713_AIC23_CodecHandle hCodec;
     hCodec = DSK6713_AIC23_openCodec(0, &config);
-    DSK6713_AIC23_config(hCodec, config);
-*/
+    DSK6713_AIC23_config(hCodec, config);*/
 
 	return;
 }
 
 int uartToAIC(uint8_t uartDataByte){
-    int uartData, aicData = 0;
+    int aicDataMSB, aicDataLSB = 0;
 
     if(DSK6713_DIP_get(DIP0)){
         DSK6713_LED_on(LED0);
@@ -99,17 +103,27 @@ int uartToAIC(uint8_t uartDataByte){
         DSK6713_LED_off(LED0);
 
     if(flagCompanding){
-        uartData = ulaw2int(uartDataByte);              //Transform 8 bits to 14 bits with sign extension bits
-        uartData = uartData << 16;                      //Ignore 16 bits MSB of sign extension
-        aicData = _add2(uartData, (16 >> uartData));    //Return 32 bits with 16 bits MSB and LSB equal for output_sample()
+        aicDataLSB = ulaw2int(uartDataByte);          //Transform 8 bits to 14 bits with sign extension bits
+        aicDataLSB = aicDataLSB << 16;                  //Ignore 16 bits MSB of sign extension
+        aicDataLSB = 16 >> aicDataLSB;                 //Return 32 bits with 16 bits MSB and LSB equal for output_sample()
         flagCompanding = false;
     }
-    else{
-        uartData = (uartData + uartDataByte) << 8;      //Transform 8 bits to 16 bits (8 bits becoming MSB bits of 16 bits)
-        aicData = _add2(uartData, (uartData << 16));    //Return 32 bits with 16 bits MSB and LSB equal for output_sample()
-    }
+    else
+        aicDataLSB = (int)(aicDataLSB + uartDataByte) << 8;  //Transform 8 bits to 16 bits (8 bits becoming MSB bits of 16 bits)
 
-    return aicData;
+
+    //  Return 32 bits with 16 bits MSB and LSB equal for output_sample()
+    //  OR
+    //  one 16 bits is the recording (MSB for left side)
+    if(isPlaying)
+        aicDataMSB = processReadingInSDRAM();
+    else
+        aicDataMSB = (aicDataLSB << 16);
+
+    if(isRecording)
+        processSavingInSDRAM((short)aicDataLSB);
+
+    return _add2(aicDataMSB, aicDataLSB);
 }
 
 uint8_t aicToUart(short aicData){

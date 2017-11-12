@@ -34,6 +34,7 @@
 #define LED2 2
 #define LED3 3
 
+#define DIP2 2
 #define DIP3 3
 
 /****************************************************************************
@@ -94,6 +95,11 @@ void main()
             flagRS232 = true;
             DSK6713_LED_on(LED2);
             DSK6713_LED_off(LED3);
+        }
+
+        //Bonus features
+        if(DSK6713_DIP_get(DIP2)){
+
         }
 
 	}
