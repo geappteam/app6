@@ -9,7 +9,8 @@
 ***************************************************************************/
 #include <csl.h>
 #include <csl_mcbsp.h>
-#include <C6713Helper_UdeS.h>.h>
+#include <dsk6713.h>
+#include "SPI_Config.h"
 
 /***************************************************************************
 	Include Module Header :

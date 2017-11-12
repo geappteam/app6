@@ -11,13 +11,6 @@
 #include <csl.h>
 #include <csl_mcbsp.h>
 
-
-#ifdef SPI_DRIVER_CONFIG_IMPORT
-    #define EXTERN
-#else
-    #define EXTERN extern
-#endif
-
-//EXTERN McBSP_Config MCBSP0_SPI_Cfg;
+MCBSP_Config MCBSP0_SPI_Cfg;
 
 #endif /* INCLUDES_SPI_CONFIG_H_ */
