@@ -28,6 +28,11 @@
 //vos  #defines ou const int blablabla
 //unique à ce fichier
 
+#define LED2 2
+#define LED3 3
+
+#define DIP3 3
+
 /****************************************************************************
 	Extern content declaration :
 ****************************************************************************/
@@ -38,6 +43,7 @@ extern void vectors();   // Vecteurs d'interruption
 extern volatile unsigned inData;
 extern volatile unsigned outData;
 extern volatile bool flagInt11;
+extern bool flagRS232;
 
 /****************************************************************************
 	Private Types :
@@ -79,6 +85,17 @@ void main()
 	        //...
 	        flagInt11 = false;
 	    }
+
+        if(DSK6713_DIP_get(DIP3) && flagRS232){
+            flagRS232 = false;
+            DSK6713_LED_on(LED3);
+            DSK6713_LED_off(LED2);
+        }
+        else{
+            flagRS232 = true;
+            DSK6713_LED_on(LED2);
+            DSK6713_LED_off(LED3);
+        }
 
 	}
 }

@@ -31,6 +31,7 @@ extern int ulaw2int(unsigned char log);
 volatile unsigned inData;
 volatile unsigned outData;
 volatile bool flagInt11;
+bool flagRS232;
 bool flagCompanding;
 
 /****************************************************************************
@@ -72,6 +73,7 @@ void Audio_init(void)
     outData = 0;
     flagInt11 = false;
     flagCompanding = false;
+    flagRS232 = false;
 
     comm_intr(DSK6713_AIC23_FREQ_16KHZ, DSK6713_AIC23_INPUT_MIC); //Because 230,4kbauds/s for UART (11 bauds)
 
@@ -116,6 +118,12 @@ uint8_t aicToUart(short aicData){
     }
     else
         DSK6713_LED_off(LED0);
+
+    if(flagRS232)
+        DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) | DC_CNTL0));
+    else
+        DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) & ~DC_CNTL0));
+    //add wait
 
     if(flagCompanding){
         uartData = int2ulaw(aicData);
