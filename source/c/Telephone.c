@@ -17,11 +17,12 @@
 
 // standard libraries 
 #include <csl.h>
-#include <dsk6713.h>
 #include <stdio.h>   // get standard I/O functions (as printf)
 #include <stddef.h>  // get null and size_t definition
 #include <stdbool.h> // get boolean, true and false definition
-
+#include <dsk6713.h>
+#include <dsk6713_led.h>
+#include <dsk6713_dip.h>
 
 /****************************************************************************
 	Private macros and constants :
@@ -78,6 +79,11 @@ void main()
 	// initialisation des modules et des périphériques
 	myModule_init(); // initialisation du module exemple ; à enlever
 	
+
+
+
+
+
 
 	// Boucle infinie
 	while(1)

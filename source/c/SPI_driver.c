@@ -66,7 +66,7 @@ MCBSP_Config MCBSP_SPI_Config = {
     MCBSP_FMKS(RCR, RFIG, NO)               |
     MCBSP_FMKS(RCR, RDATDLY, 0BIT)          |
     MCBSP_FMKS(RCR, RFRLEN1, OF(0))         | // This changes to 1 FRAME
-    MCBSP_FMKS(RCR, RWDLEN1, 8BIT)          | // This changes to 8 bits per frame
+    MCBSP_FMKS(RCR, RWDLEN1, 16BIT)         | // This changes to 8 bits per frame
     MCBSP_FMKS(RCR, RWDREVRS, DISABLE),
 
     MCBSP_FMKS(XCR, XPHASE, SINGLE)         |
@@ -76,7 +76,7 @@ MCBSP_Config MCBSP_SPI_Config = {
     MCBSP_FMKS(XCR, XFIG, NO)               |
     MCBSP_FMKS(XCR, XDATDLY, 0BIT)          |
     MCBSP_FMKS(XCR, XFRLEN1, OF(0))         | // This changes to 1 FRAME
-    MCBSP_FMKS(XCR, XWDLEN1, 8BIT)          | // This changes to 8 bits per frame
+    MCBSP_FMKS(XCR, XWDLEN1, 16BIT)         | // This changes to 8 bits per frame
     MCBSP_FMKS(XCR, XWDREVRS, DISABLE),
 
     MCBSP_FMKS(SRGR, GSYNC, DEFAULT)        |
