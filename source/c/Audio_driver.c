@@ -37,6 +37,8 @@ bool flagCompanding;
 	Private macros and constants :
 ****************************************************************************/
 #define DSK6713_AIC23_INPUT_MIC 0x0015
+#define DIP0 0
+#define LED0 0
 
 /****************************************************************************
 	Private Types :
@@ -84,10 +86,18 @@ void Audio_init(void)
 int uartToAIC(uint8_t uartDataByte){
     int uartData, aicData = 0;
 
+    if(DSK6713_DIP_get(DIP0)){
+        DSK6713_LED_on(LED0);
+        flagCompanding = true;
+    }
+    else
+        DSK6713_LED_off(LED0);
+
     if(flagCompanding){
         uartData = ulaw2int(uartDataByte);              //Transform 8 bits to 14 bits with sign extension bits
         uartData = uartData << 16;                      //Ignore 16 bits MSB of sign extension
         aicData = _add2(uartData, (16 >> uartData));    //Return 32 bits with 16 bits MSB and LSB equal for output_sample()
+        flagCompanding = false;
     }
     else{
         uartData = (uartData + uartDataByte) << 8;      //Transform 8 bits to 16 bits (8 bits becoming MSB bits of 16 bits)
@@ -100,8 +110,17 @@ int uartToAIC(uint8_t uartDataByte){
 uint8_t aicToUart(short aicData){
     uint8_t uartData = 0;
 
-    if(flagCompanding)
+    if(DSK6713_DIP_get(DIP0)){
+        DSK6713_LED_on(LED0);
+        flagCompanding = true;
+    }
+    else
+        DSK6713_LED_off(LED0);
+
+    if(flagCompanding){
         uartData = int2ulaw(aicData);
+        flagCompanding = false;
+    }
     else
         uartData = aicData >> 8;
 

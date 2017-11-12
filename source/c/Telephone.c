@@ -38,7 +38,6 @@ extern void vectors();   // Vecteurs d'interruption
 extern volatile unsigned inData;
 extern volatile unsigned outData;
 extern volatile bool flagInt11;
-extern bool flagCompanding;
 
 /****************************************************************************
 	Private Types :
@@ -69,19 +68,24 @@ void main()
 	// initialisation des modules et des périphériques
 	myModule_init(); // initialisation du module exemple ; à enlever
 	
+	DSK6713_init();
+	DSK6713_LED_init();
+	DSK6713_DIP_init();
+
 	// Boucle infinie
 	while(1)
 	{	
 	    if(flagInt11){
 	        //...
+	        flagInt11 = false;
 	    }
+
 	}
 }
 
 /****************************************************************************
 	Main program private functions :
 ****************************************************************************/
-  
 
 /****************************************************************************
 	Main program interrupt service routines (ISR) :
