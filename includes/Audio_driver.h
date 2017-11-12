@@ -18,6 +18,7 @@
 #include <stdio.h>   // get standard I/O functions (as printf)
 #include <stddef.h>  // get null and size_t definition
 #include <stdbool.h> // get boolean, true and false definition
+#include <stdint.h>
 
 
 
@@ -60,6 +61,8 @@
 EXTERN void Audio_init(void);
 
 // ajoutez vos prototype de fonction ici
+int uartToAIC(uint8_t uartDataByte);
+uint8_t aicToUart(short aicData);
 
 #undef AUDIO_DRIVER_MODULE_IMPORT
 

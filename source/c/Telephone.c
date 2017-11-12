@@ -34,8 +34,11 @@
 
 // déclaration des contenus utilisés ici mais définis ailleurs
 
-extern far void vectors();   // Vecteurs d'interruption
-
+extern void vectors();   // Vecteurs d'interruption
+extern volatile unsigned inData;
+extern volatile unsigned outData;
+extern volatile bool flagInt11;
+extern bool flagCompanding;
 
 /****************************************************************************
 	Private Types :
@@ -69,7 +72,9 @@ void main()
 	// Boucle infinie
 	while(1)
 	{	
-
+	    if(flagInt11){
+	        //...
+	    }
 	}
 }
 

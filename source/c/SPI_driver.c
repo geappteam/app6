@@ -9,7 +9,7 @@
 ***************************************************************************/
 #include <csl.h>
 #include <csl_mcbsp.h>
-#include <dsk6173.h>
+#include <C6713Helper_UdeS.h>.h>
 
 /***************************************************************************
 	Include Module Header :
@@ -22,7 +22,7 @@
 	Extern content declaration :
 ****************************************************************************/
 
-extern far void vectors();   // Vecteurs d'interruption
+extern void vectors();   // Vecteurs d'interruption
 
 /****************************************************************************
 	Private macros and constants :
