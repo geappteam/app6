@@ -16,6 +16,8 @@
 
 
 // standard libraries 
+#include <csl.h>
+#include <dsk6713.h>
 #include <stdio.h>   // get standard I/O functions (as printf)
 #include <stddef.h>  // get null and size_t definition
 #include <stdbool.h> // get boolean, true and false definition
@@ -63,9 +65,15 @@ extern far void vectors();   // Vecteurs d'interruption
 
 void main()
 {
+    /* initialize the CSL and BSL library */
+    CSL_init();
+    DSK6713_init();
+
+    SPI_init();
+
 	// initialisation des modules et des périphériques
 	myModule_init(); // initialisation du module exemple ; à enlever
-	
+
 	// Boucle infinie
 	while(1)
 	{	
