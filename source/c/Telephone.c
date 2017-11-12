@@ -36,8 +36,10 @@
 
 // déclaration des contenus utilisés ici mais définis ailleurs
 
-extern far void vectors();   // Vecteurs d'interruption
-
+extern void vectors();   // Vecteurs d'interruption
+extern volatile unsigned inData;
+extern volatile unsigned outData;
+extern volatile bool flagInt11;
 
 /****************************************************************************
 	Private Types :
@@ -68,15 +70,22 @@ void main()
     /* initialize the CSL and BSL library */
     CSL_init();
     DSK6713_init();
+    DSK6713_LED_init();
+    DSK6713_DIP_init();
 
     SPI_init();
 
 	// initialisation des modules et des périphériques
 	myModule_init(); // initialisation du module exemple ; à enlever
+	
 
 	// Boucle infinie
 	while(1)
 	{	
+	    if(flagInt11){
+	        //...
+	        flagInt11 = false;
+	    }
 
 	}
 }
@@ -84,7 +93,6 @@ void main()
 /****************************************************************************
 	Main program private functions :
 ****************************************************************************/
-  
 
 /****************************************************************************
 	Main program interrupt service routines (ISR) :
