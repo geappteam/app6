@@ -10,7 +10,8 @@
 ***************************************************************************/
 
 #include "C6713Helper_UdeS.h"
-
+#include <dsk6713_led.h>
+#include <dsk6713_dip.h>
 
 /***************************************************************************
 	Include Module Header :
@@ -33,6 +34,7 @@ volatile unsigned outData;
 volatile bool flagInt11;
 bool flagRS232;
 bool flagCompanding;
+bool previousCommute;
 
 /****************************************************************************
 	Private macros and constants :
@@ -74,6 +76,7 @@ void Audio_init(void)
     flagInt11 = false;
     flagCompanding = false;
     flagRS232 = false;
+    previousCommute = false;
 
     comm_intr(DSK6713_AIC23_FREQ_16KHZ, DSK6713_AIC23_INPUT_MIC); //Because 230,4kbauds/s for UART (11 bauds)
 
@@ -119,11 +122,15 @@ uint8_t aicToUart(short aicData){
     else
         DSK6713_LED_off(LED0);
 
-    if(flagRS232)
-        DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) | DC_CNTL0));
-    else
-        DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) & ~DC_CNTL0));
-    //add wait
+    if(previousCommute != flagRS232){
+        if(flagRS232)
+            DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) | DC_CNTL0));
+        else
+            DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) & ~DC_CNTL0));
+        previousCommute = flagRS232;
+        DSK6713_waitusec(100);          //DSP is too fast compared to relay's actuator
+    }
+
 
     if(flagCompanding){
         uartData = int2ulaw(aicData);
@@ -143,7 +150,7 @@ uint8_t aicToUart(short aicData){
 interrupt void c_int11(void)
 {
     inData = input_right_sample(); //MIC
-    DSK6713_waitusec(10);          //DSP is to fast compared to McBSP1
+    DSK6713_waitusec(10);          //DSP is too fast compared to McBSP1
     output_sample(outData);        //HEADPHONES
     flagInt11 = true;
 	return;

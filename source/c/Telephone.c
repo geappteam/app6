@@ -67,6 +67,7 @@ extern bool flagRS232;
 ****************************************************************************/
 
 //déclarer vos prototype de fonction ici
+static void initAll(void);
 
 /****************************************************************************
 	Main Program :
@@ -75,23 +76,8 @@ extern bool flagRS232;
 void main()
 {
     /* initialize the CSL and BSL library */
-    CSL_init();
-    DSK6713_init();
-    DSK6713_LED_init();
-    DSK6713_DIP_init();
+    initAll();
 
-    SPI_init();
-
-	// initialisation des modules et des périphériques
-	myModule_init(); // initialisation du module exemple ; à enlever
-	
-
-
-
-
-
-
-	// Boucle infinie
 	while(1)
 	{	
 	    if(flagInt11){
@@ -99,7 +85,7 @@ void main()
 	        flagInt11 = false;
 	    }
 
-        if(DSK6713_DIP_get(DIP3) && flagRS232){
+        if(DSK6713_DIP_get(DIP3)){
             flagRS232 = false;
             DSK6713_LED_on(LED3);
             DSK6713_LED_off(LED2);
@@ -116,6 +102,14 @@ void main()
 /****************************************************************************
 	Main program private functions :
 ****************************************************************************/
+static void initAll(void){
+    CSL_init();
+    DSK6713_init();
+    DSK6713_LED_init();
+    DSK6713_DIP_init();
+
+    SPI_init();
+}
 
 /****************************************************************************
 	Main program interrupt service routines (ISR) :
