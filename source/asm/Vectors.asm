@@ -4,7 +4,7 @@
    .global _vector1
    .global _vector2
    .global _vector3
-   .global _vector4
+   .global _uart_iterrupt
    .global _vector5
    .global _vector6
    .global _vector7
@@ -12,7 +12,7 @@
    .global _vector9	  
    .global _vector10 
    .global _c_int11  		; AIC
-   .global _vector12  
+   .global _spi_transmit_int0
    .global _spi_receive_int0
    .global _vector14
    .global _vector15
@@ -41,7 +41,7 @@ _vector0:   VEC_ENTRY _c_int00   	;RESET
 _vector1:   VEC_ENTRY _vec_dummy  	;NMI
 _vector2:   VEC_ENTRY _vec_dummy  	;RSVD
 _vector3:   VEC_ENTRY _vec_dummy
-_vector4:   VEC_ENTRY _vec_dummy	
+_vector4:   VEC_ENTRY _uart_iterrupt
 _vector5:   VEC_ENTRY _vec_dummy
 _vector6:   VEC_ENTRY _vec_dummy
 _vector7:   VEC_ENTRY _vec_dummy
@@ -49,7 +49,7 @@ _vector8:   VEC_ENTRY _vec_dummy
 _vector9:   VEC_ENTRY _vec_dummy
 _vector10:  VEC_ENTRY _vec_dummy
 _vector11:  VEC_ENTRY _c_int11    	; AIC    	
-_vector12:  VEC_ENTRY _vec_dummy
+_vector12:  VEC_ENTRY _spi_transmit_int0
 _vector13:  VEC_ENTRY _spi_receive_int0
 _vector14:  VEC_ENTRY _vec_dummy
 _vector15:  VEC_ENTRY _vec_dummy

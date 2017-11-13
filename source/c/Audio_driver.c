@@ -36,7 +36,7 @@ extern bool isPlaying;
 
 volatile unsigned inData;
 volatile unsigned outData;
-volatile bool flagInt11;
+volatile bool flagAIC;
 bool flagRS232;
 bool flagCompanding;
 bool previousCommute;
@@ -78,7 +78,7 @@ void Audio_init(void)
 
     inData = 0;
     outData = 0;
-    flagInt11 = false;
+    flagAIC = false;
     flagCompanding = false;
     flagRS232 = false;
     previousCommute = false;
@@ -162,10 +162,7 @@ uint8_t aicToUart(short aicData){
 
 interrupt void c_int11(void)
 {
-    inData = input_right_sample(); //MIC
-    DSK6713_waitusec(10);          //DSP is too fast compared to McBSP1
-    output_sample(outData);        //HEADPHONES
-    flagInt11 = true;
+    flagAIC = true;
 	return;
 }
 

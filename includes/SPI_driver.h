@@ -48,13 +48,16 @@
 ***************************************************************************/
 
 
-
 /***************************************************************************		
 	Function prototype :
 ***************************************************************************/
 
 // Function description here ...
 EXTERN void SPI_init();
+
+EXTERN void sendByteUART(unsigned char data);
+EXTERN unsigned char readByteUART();
+
 
 // ajoutez vos prototype de fonction ici
 
