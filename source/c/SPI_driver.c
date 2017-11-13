@@ -163,9 +163,8 @@ void SPI_init()
     MCBSP_enableSrgr(SPI_PortHandle);
     DSK6713_waitusec(10);
 
-    // Renable selected interrupt
-    IRQ_map(IRQ_EVT_RINT0, IRQ_EVT_RINT0);
-    IRQ_map(IRQ_EVT_XINT0, IRQ_EVT_XINT0);
+//    IRQ_map(IRQ_EVT_RINT0, IRQ_EVT_RINT0);
+//    IRQ_map(IRQ_EVT_XINT0, IRQ_EVT_XINT0);
     IRQ_map(IRQ_EVT_EXTINT4, IRQ_EVT_EXTINT4);
 
     /* Wake up the McBSP as receiver */

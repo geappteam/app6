@@ -83,6 +83,7 @@ void main()
 
 	while(1)
 	{	
+
 	    if(flagAIC){
 	        sendByteUART(aicToUart(input_right_sample())); //MIC
 	        output_sample(outData);
@@ -122,9 +123,10 @@ static void initAll(void){
     DSK6713_LED_init();
     DSK6713_DIP_init();
 
-    SPI_init();
 
     Audio_init();
+
+    SPI_init(); // Must be called after audio init because it resets McBSP0's handle
 }
 
 /****************************************************************************
