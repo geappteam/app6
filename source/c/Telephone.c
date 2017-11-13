@@ -10,10 +10,8 @@
 ***************************************************************************/
 
 // Used modules headers
-#include "module_example.h"
 #include "SPI_driver.h"
 #include "Audio_driver.h"
-#include "playback.h"
 #include "C6713Helper_UdeS.h"
 
 // standard libraries 
@@ -35,7 +33,6 @@
 #define LED2 2
 #define LED3 3
 
-#define DIP1 1
 #define DIP2 2
 #define DIP3 3
 
@@ -45,14 +42,9 @@
 
 // déclaration des contenus utilisés ici mais définis ailleurs
 
-extern void vectors();   // Vecteurs d'interruption
-
-extern bool isRecording;
-extern unsigned int inData;
-extern unsigned int outData;
-extern volatile bool flagAIC;
-extern volatile bool flagRS232;
+extern bool flagRS232;
 extern volatile bool flagUART;
+
 
 /****************************************************************************
 	Private Types :
@@ -86,15 +78,13 @@ void main()
 
 	while(1)
 	{	
-
 	    if(flagAIC){
-	        sendByteUART(aicToUart(input_right_sample())); //MIC
-	        output_sample(outData);
+	        sendByteUART(aicToUart(micReading)); //MIC
 	        flagAIC = false;
 	    }
 
 	    if (flagUART) {
-	        outData = uartToAIC(readByteUART());
+	        speakerValue = uartToAIC(readByteUART());
 	        flagUART = false;
 	    }
 
@@ -110,16 +100,10 @@ void main()
         }
 
         //Bonus features
-        //Turn on other telephone's LED on
-        //TODO...
+        if(DSK6713_DIP_get(DIP2)){
 
-        // Recording
-        if((DSK6713_DIP_get(DIP1) && !DSK6713_DIP_get(DIP2)) || isRecording)
-            record();
+        }
 
-        // Playing
-        if(DSK6713_DIP_get(DIP2) && !DSK6713_DIP_get(DIP1))
-            play();
 	}
 }
 
@@ -132,10 +116,10 @@ static void initAll(void){
     DSK6713_LED_init();
     DSK6713_DIP_init();
 
-
     Audio_init();
+    DSK6713_waitusec(100);
 
-    SPI_init(); // Must be called after audio init because it resets McBSP0's handle
+    SPI_init();
 }
 
 /****************************************************************************

@@ -85,7 +85,7 @@ MCBSP_Config MCBSP_SPI_Config = {
     MCBSP_FMKS(SRGR, FSGM, DEFAULT)         |
     MCBSP_FMKS(SRGR, FPER, DEFAULT)         |
     MCBSP_FMKS(SRGR, FWID, DEFAULT)         |
-    MCBSP_FMKS(SRGR, CLKGDV, OF(16)),           // Min SCLK period is 238 ns -> rounding to 300 ns
+    MCBSP_FMKS(SRGR, CLKGDV, OF(32)),           // Min SCLK period is 238 ns -> rounding to 300 ns
 
     MCBSP_MCR_DEFAULT,
     MCBSP_RCER_DEFAULT,
@@ -111,29 +111,29 @@ const Uint32 SPI_WRITE_DATA = 0x8000;
 const Uint32 SPI_READ_DATA = 0x0000;
 
 #define N_FIFO_ENABLE 13
-#define SHDNi 12
-#define N_TM 11
-#define N_RM 10
-#define N_PM 9
-#define N_RAM 8
-#define TWO_STOP_BITS 7
-#define PARITY_ENABLE 6
-#define WORD_LENGHT 5
+#define SOFT_SHUTDOWN 12
+#define N_TRANSMIT_BUFF_EMPTY_INTERRUPT 11
+#define N_DATA_AVAILABLE_INTERRUPT 10
+#define N_PARITY_BIT_INTERRUPT 9
+#define N_FRAMING_ERROR_INTERRUPT 8
+#define IrDA_MODE 7
+#define TWO_STOP_BITS 6
+#define PARITY_ENABLE 5
+#define WORD_LENGHT 4
 #define UART_BAUD_RATE_DIV 0
 
 const Uint32 MAX3111_Config =
     0   << N_FIFO_ENABLE |
-    0   << SHDNi |
-    0   << N_TM |
-    1   << N_RM |
-    0   << N_PM |
-    0   << N_RAM |
+    0   << SOFT_SHUTDOWN |
+    0   << N_TRANSMIT_BUFF_EMPTY_INTERRUPT |
+    1   << N_DATA_AVAILABLE_INTERRUPT |
+    0   << N_PARITY_BIT_INTERRUPT |
+    0   << N_FRAMING_ERROR_INTERRUPT |
+    0   << IrDA_MODE |
     1   << TWO_STOP_BITS |
     0   << PARITY_ENABLE |
     0   << WORD_LENGHT |
     0   << UART_BAUD_RATE_DIV;
-
-volatile bool flagUART = false;
 
 /****************************************************************************
 	Private functions :
@@ -147,14 +147,10 @@ volatile bool flagUART = false;
 
 void SPI_init()
 {
-    /* point to the IRQ vector table */
-    IRQ_setVecs(vectors); // CCS Error does not result in compilation fault
-
-    MCBSP_reset(DSK6713_AIC23_CONTROLHANDLE);
-    MCBSP_close(DSK6713_AIC23_CONTROLHANDLE);
-
     // Divert McBSP signals to daughter card
     DSK6713_rset(DSK6713_MISC, MCBSP1SEL);
+
+    MCBSP_close(DSK6713_AIC23_CONTROLHANDLE);
 
     SPI_PortHandle = MCBSP_open(MCBSP_DEV0, MCBSP_OPEN_RESET);
 
@@ -163,8 +159,8 @@ void SPI_init()
     MCBSP_enableSrgr(SPI_PortHandle);
     DSK6713_waitusec(10);
 
-//    IRQ_map(IRQ_EVT_RINT0, IRQ_EVT_RINT0);
-//    IRQ_map(IRQ_EVT_XINT0, IRQ_EVT_XINT0);
+    /* point to the IRQ vector table */
+    IRQ_setVecs(vectors);
     IRQ_map(IRQ_EVT_EXTINT4, IRQ_EVT_EXTINT4);
 
     /* Wake up the McBSP as receiver */
@@ -190,6 +186,7 @@ void SPI_init()
     }
 
     IRQ_enable(IRQ_EVT_EXTINT4);
+    flagUART = false;
 
     /* enable NMI and GI */
     IRQ_globalEnable();
@@ -218,16 +215,6 @@ unsigned char readByteUART()
 /****************************************************************************
 	ISR :
 ****************************************************************************/
-
-// unused
-void interrupt spi_receive_int0(){
-
-}
-
-// Unused
-void interrupt spi_transmit_int0(){
-
-}
 
 void interrupt uart_iterrupt(){
     flagUART = true;

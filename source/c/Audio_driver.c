@@ -12,7 +12,6 @@
 #include "C6713Helper_UdeS.h"
 #include <dsk6713_led.h>
 #include <dsk6713_dip.h>
-
 #include "playback.h"
 
 /***************************************************************************
@@ -27,16 +26,12 @@
 	Extern content declaration :
 ****************************************************************************/
 
-extern void vectors();   // Vecteurs d'interruption
 extern unsigned char int2ulaw(short linear);
 extern int ulaw2int(unsigned char log);
 
 extern bool isRecording;
 extern bool isPlaying;
 
-volatile unsigned inData;
-volatile unsigned outData;
-volatile bool flagAIC;
 bool flagRS232;
 bool flagCompanding;
 bool previousCommute;
@@ -76,18 +71,21 @@ void Audio_init(void)
 {
     //DSK6713_init(); //Initialization might be already done by comm_intr
 
-    inData = 0;
-    outData = 0;
+    micReading = 0;
+    speakerValue = 0;
     flagAIC = false;
     flagCompanding = false;
     flagRS232 = false;
     previousCommute = false;
 
     comm_intr(DSK6713_AIC23_FREQ_16KHZ, DSK6713_AIC23_INPUT_MIC); //Because 230,4kbauds/s for UART (11 bauds)
+    IRQ_globalDisable();
 
     /*DSK6713_AIC23_CodecHandle hCodec;
     hCodec = DSK6713_AIC23_openCodec(0, &config);
     DSK6713_AIC23_config(hCodec, config);*/
+
+    flagAIC = false;
 
 	return;
 }
@@ -162,6 +160,9 @@ uint8_t aicToUart(short aicData){
 
 interrupt void c_int11(void)
 {
+    micReading = input_right_sample();
+    output_sample(speakerValue | (speakerValue << 16));
+
     flagAIC = true;
 	return;
 }

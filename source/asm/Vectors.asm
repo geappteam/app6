@@ -12,8 +12,8 @@
    .global _vector9	  
    .global _vector10 
    .global _c_int11  		; AIC
-   .global _spi_transmit_int0
-   .global _spi_receive_int0
+   .global _vector12
+   .global _vector13
    .global _vector14
    .global _vector15
 
@@ -49,7 +49,7 @@ _vector8:   VEC_ENTRY _vec_dummy
 _vector9:   VEC_ENTRY _vec_dummy
 _vector10:  VEC_ENTRY _vec_dummy
 _vector11:  VEC_ENTRY _c_int11    	; AIC    	
-_vector12:  VEC_ENTRY _spi_transmit_int0
-_vector13:  VEC_ENTRY _spi_receive_int0
+_vector12:  VEC_ENTRY _vec_dummy
+_vector13:  VEC_ENTRY _vec_dummy
 _vector14:  VEC_ENTRY _vec_dummy
 _vector15:  VEC_ENTRY _vec_dummy
