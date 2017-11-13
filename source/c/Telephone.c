@@ -13,7 +13,7 @@
 #include "module_example.h"
 #include "SPI_driver.h"
 #include "Audio_driver.h"
-
+#include "C6713Helper_UdeS.h"
 
 // standard libraries 
 #include <csl.h>
@@ -44,10 +44,12 @@
 // déclaration des contenus utilisés ici mais définis ailleurs
 
 extern void vectors();   // Vecteurs d'interruption
-extern volatile unsigned inData;
-extern volatile unsigned outData;
-extern volatile bool flagInt11;
-extern bool flagRS232;
+extern unsigned int inData;
+extern unsigned int outData;
+extern volatile bool flagAIC;
+extern volatile bool flagRS232;
+extern volatile bool flagUART;
+
 
 /****************************************************************************
 	Private Types :
@@ -81,9 +83,15 @@ void main()
 
 	while(1)
 	{	
-	    if(flagInt11){
-	        //...
-	        flagInt11 = false;
+	    if(flagAIC){
+	        sendByteUART(aicToUart(input_right_sample())); //MIC
+	        output_sample(outData);
+	        flagAIC = false;
+	    }
+
+	    if (flagUART) {
+	        outData = uartToAIC(readByteUART());
+	        flagUART = false;
 	    }
 
         if(DSK6713_DIP_get(DIP3)){
@@ -115,6 +123,8 @@ static void initAll(void){
     DSK6713_DIP_init();
 
     SPI_init();
+
+    Audio_init();
 }
 
 /****************************************************************************

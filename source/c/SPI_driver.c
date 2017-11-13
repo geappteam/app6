@@ -133,6 +133,7 @@ const Uint32 MAX3111_Config =
     0   << WORD_LENGHT |
     0   << UART_BAUD_RATE_DIV;
 
+volatile bool flagUART = false;
 
 /****************************************************************************
 	Private functions :
@@ -146,11 +147,6 @@ const Uint32 MAX3111_Config =
 
 void SPI_init()
 {
-    /* enable NMI and GI */
-    IRQ_globalEnable();
-    IRQ_nmiEnable();
-
-
     /* point to the IRQ vector table */
     IRQ_setVecs(vectors); // CCS Error does not result in compilation fault
 
@@ -169,6 +165,8 @@ void SPI_init()
 
     // Renable selected interrupt
     IRQ_map(IRQ_EVT_RINT0, IRQ_EVT_RINT0);
+    IRQ_map(IRQ_EVT_XINT0, IRQ_EVT_XINT0);
+    IRQ_map(IRQ_EVT_EXTINT4, IRQ_EVT_EXTINT4);
 
     /* Wake up the McBSP as receiver */
     MCBSP_enableRcv(SPI_PortHandle);
@@ -192,23 +190,46 @@ void SPI_init()
         return;
     }
 
-    IRQ_enable(IRQ_EVT_RINT0);
+    IRQ_enable(IRQ_EVT_EXTINT4);
+
+    /* enable NMI and GI */
+    IRQ_globalEnable();
+    IRQ_nmiEnable();
 
     printf ("Success Setting up the MAX3111!\n");
 }
 
 
+void sendByteUART(unsigned char data)
+{
+    while(! MCBSP_xrdy(SPI_PortHandle));
+    MCBSP_write(SPI_PortHandle, SPI_WRITE_DATA | data);
+    while(! MCBSP_rrdy(SPI_PortHandle));
+    MCBSP_read(SPI_PortHandle);
+}
+
+unsigned char readByteUART()
+{
+    while(! MCBSP_xrdy(SPI_PortHandle));
+    MCBSP_write(SPI_PortHandle, SPI_READ_DATA);
+    while(! MCBSP_rrdy(SPI_PortHandle));
+    return MCBSP_read(SPI_PortHandle) & 0xFF;
+}
+
 /****************************************************************************
 	ISR :
 ****************************************************************************/
 
-// Runs when the SPI data is ready to read
+// unused
 void interrupt spi_receive_int0(){
-    short data = MCBSP_read(SPI_PortHandle);
 
 }
 
 // Unused
 void interrupt spi_transmit_int0(){
 
+}
+
+void interrupt uart_iterrupt(){
+    flagUART = true;
 }
