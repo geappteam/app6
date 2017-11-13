@@ -85,7 +85,7 @@ MCBSP_Config MCBSP_SPI_Config = {
     MCBSP_FMKS(SRGR, FSGM, DEFAULT)         |
     MCBSP_FMKS(SRGR, FPER, DEFAULT)         |
     MCBSP_FMKS(SRGR, FWID, DEFAULT)         |
-    MCBSP_FMKS(SRGR, CLKGDV, OF(68)),           // Min SCLK period is 238 ns -> rounding to 300 ns
+    MCBSP_FMKS(SRGR, CLKGDV, OF(16)),           // Min SCLK period is 238 ns -> rounding to 300 ns
 
     MCBSP_MCR_DEFAULT,
     MCBSP_RCER_DEFAULT,
@@ -94,9 +94,9 @@ MCBSP_Config MCBSP_SPI_Config = {
     MCBSP_FMKS(PCR, XIOEN, SP)              |
     MCBSP_FMKS(PCR, RIOEN, SP)              |
     MCBSP_FMKS(PCR, FSXM, INTERNAL)         |
-    MCBSP_FMKS(PCR, FSRM, EXTERNAL)         |
+    MCBSP_FMKS(PCR, FSRM, INTERNAL)         |
     MCBSP_FMKS(PCR, CLKXM, OUTPUT)          |
-    MCBSP_FMKS(PCR, CLKRM, INPUT)           |
+    MCBSP_FMKS(PCR, CLKRM, OUTPUT)          |
     MCBSP_FMKS(PCR, CLKSSTAT, DEFAULT)      |
     MCBSP_FMKS(PCR, DXSTAT, DEFAULT)        |
     MCBSP_FMKS(PCR, FSXP, ACTIVELOW)        |
@@ -104,6 +104,35 @@ MCBSP_Config MCBSP_SPI_Config = {
     MCBSP_FMKS(PCR, CLKXP, RISING)          |
     MCBSP_FMKS(PCR, CLKRP, RISING)
 };
+
+const Uint32 SPI_WRITE_CONFIG = 0xC000;
+const Uint32 SPI_READ_CONFIG = 0x4000;
+const Uint32 SPI_WRITE_DATA = 0x8000;
+const Uint32 SPI_READ_DATA = 0x0000;
+
+#define N_FIFO_ENABLE 13
+#define SHDNi 12
+#define N_TM 11
+#define N_RM 10
+#define N_PM 9
+#define N_RAM 8
+#define TWO_STOP_BITS 7
+#define PARITY_ENABLE 6
+#define WORD_LENGHT 5
+#define UART_BAUD_RATE_DIV 0
+
+const Uint32 MAX3111_Config =
+    0   << N_FIFO_ENABLE |
+    0   << SHDNi |
+    0   << N_TM |
+    1   << N_RM |
+    0   << N_PM |
+    0   << N_RAM |
+    1   << TWO_STOP_BITS |
+    0   << PARITY_ENABLE |
+    0   << WORD_LENGHT |
+    0   << UART_BAUD_RATE_DIV;
+
 
 /****************************************************************************
 	Private functions :
@@ -118,12 +147,12 @@ MCBSP_Config MCBSP_SPI_Config = {
 void SPI_init()
 {
     /* enable NMI and GI */
-    IRQ_nmiEnable();
     IRQ_globalEnable();
+    IRQ_nmiEnable();
+
 
     /* point to the IRQ vector table */
     IRQ_setVecs(vectors); // CCS Error does not result in compilation fault
-    IRQ_reset(IRQ_EVT_RINT0);   // Temporarly disable selected interrupt
 
     MCBSP_reset(DSK6713_AIC23_CONTROLHANDLE);
     MCBSP_close(DSK6713_AIC23_CONTROLHANDLE);
@@ -135,15 +164,37 @@ void SPI_init()
 
     MCBSP_config(SPI_PortHandle, &MCBSP_SPI_Config);
 
-    // Renable selected interrupt
-    IRQ_enable(IRQ_EVT_RINT0);
-
     MCBSP_enableSrgr(SPI_PortHandle);
     DSK6713_waitusec(10);
+
+    // Renable selected interrupt
+    IRQ_map(IRQ_EVT_RINT0, IRQ_EVT_RINT0);
 
     /* Wake up the McBSP as receiver */
     MCBSP_enableRcv(SPI_PortHandle);
     MCBSP_enableXmt(SPI_PortHandle);
+    DSK6713_waitusec(10);
+
+    // Configuring MAX3111 registers
+    MCBSP_write(SPI_PortHandle, SPI_WRITE_CONFIG | MAX3111_Config);
+    DSK6713_waitusec(100);
+    MCBSP_read(SPI_PortHandle);
+    DSK6713_waitusec(100);
+
+    // Check if config is applied
+    MCBSP_write(SPI_PortHandle, SPI_READ_CONFIG);
+    DSK6713_waitusec(100);
+    Uint32 configReturned = MCBSP_read(SPI_PortHandle) & ~SPI_WRITE_CONFIG;
+
+    if (configReturned != MAX3111_Config)
+    {
+        printf ("Error Setting up the MAX3111!\n");
+        return;
+    }
+
+    IRQ_enable(IRQ_EVT_RINT0);
+
+    printf ("Success Setting up the MAX3111!\n");
 }
 
 
@@ -151,7 +202,13 @@ void SPI_init()
 	ISR :
 ****************************************************************************/
 
-interrupt void spi_receive_int0(void)
-{
+// Runs when the SPI data is ready to read
+void interrupt spi_receive_int0(){
+    short data = MCBSP_read(SPI_PortHandle);
+
+}
+
+// Unused
+void interrupt spi_transmit_int0(){
 
 }
