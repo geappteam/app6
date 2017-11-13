@@ -13,6 +13,7 @@
 #include "module_example.h"
 #include "SPI_driver.h"
 #include "Audio_driver.h"
+#include "playback.h"
 
 
 // standard libraries 
@@ -34,6 +35,7 @@
 #define LED2 2
 #define LED3 3
 
+#define DIP1 1
 #define DIP2 2
 #define DIP3 3
 
@@ -44,10 +46,11 @@
 // déclaration des contenus utilisés ici mais définis ailleurs
 
 extern void vectors();   // Vecteurs d'interruption
-extern volatile unsigned inData;
-extern volatile unsigned outData;
+extern volatile unsigned int inData;
+extern volatile unsigned int outData;
 extern volatile bool flagInt11;
 extern bool flagRS232;
+extern bool isRecording;
 
 /****************************************************************************
 	Private Types :
@@ -98,10 +101,16 @@ void main()
         }
 
         //Bonus features
-        if(DSK6713_DIP_get(DIP2)){
+        //Turn on other telephone's LED on
+        //TODO...
 
-        }
+        // Recording
+        if((DSK6713_DIP_get(DIP1) && !DSK6713_DIP_get(DIP2)) || isRecording)
+            record();
 
+        // Playing
+        if(DSK6713_DIP_get(DIP2) && !DSK6713_DIP_get(DIP1))
+            play();
 	}
 }
 
