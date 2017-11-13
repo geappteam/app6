@@ -111,7 +111,6 @@ int uartToAIC(uint8_t uartDataByte){
     else
         aicDataLSB = (int)(aicDataLSB + uartDataByte) << 8;  //Transform 8 bits to 16 bits (8 bits becoming MSB bits of 16 bits)
 
-
     //  Return 32 bits with 16 bits MSB and LSB equal for output_sample()
     //  OR
     //  one 16 bits is the recording (MSB for left side)
