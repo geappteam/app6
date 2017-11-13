@@ -35,6 +35,7 @@ extern bool isPlaying;
 bool flagRS232;
 bool flagCompanding;
 bool previousCommute;
+bool flagTargetLED;
 
 /****************************************************************************
 	Private macros and constants :
@@ -42,6 +43,8 @@ bool previousCommute;
 #define DSK6713_AIC23_INPUT_MIC 0x0015
 #define DIP0 0
 #define LED0 0
+#define DIP1 1
+#define LED1 1
 
 /****************************************************************************
 	Private Types :
@@ -77,6 +80,7 @@ void Audio_init(void)
     flagCompanding = false;
     flagRS232 = false;
     previousCommute = false;
+    flagTargetLED = false;
 
     comm_intr(DSK6713_AIC23_FREQ_16KHZ, DSK6713_AIC23_INPUT_MIC); //Because 230,4kbauds/s for UART (11 bauds)
     IRQ_globalDisable();
@@ -92,6 +96,11 @@ void Audio_init(void)
 
 int uartToAIC(uint8_t uartDataByte){
     int aicDataMSB, aicDataLSB = 0;
+
+    if(uartDataByte == 0xFE)
+        DSK6713_LED_on(LED1);
+    else if(uartDataByte == 0xFF)
+        DSK6713_LED_off(LED1);
 
     if(DSK6713_DIP_get(DIP0)){
         DSK6713_LED_on(LED0);
@@ -142,16 +151,34 @@ uint8_t aicToUart(short aicData){
         DSK6713_waitusec(100);          //DSP is too fast compared to relay's actuator
     }
 
-
-    if(flagCompanding){
-        uartData = int2ulaw(aicData);
-        flagCompanding = false;
+    if(DSK6713_DIP_get(DIP1) && !flagTargetLED){
+        flagTargetLED = true;
+        uartData = 0xFE;
     }
-    else
-        uartData = aicData >> 8;
+    else if(!DSK6713_DIP_get(DIP1) && flagTargetLED){
+        flagTargetLED = false;
+        uartData = 0xFF;
+    }
+    else{
+        if(flagCompanding){
+            uartData = int2ulaw(aicData);
+            flagCompanding = false;
+        }
+        else
+            uartData = (uint8_t)(aicData >> 8);
+
+        uartData = saturateByte(uartData);
+    }
 
     //Return 8 bits unsigned for a write by SPI
     return uartData;
+}
+
+uint8_t saturateByte(uint8_t data){
+    if(data >= 0xFE)
+        return 0xFD;
+    else
+        return data;
 }
 
 /****************************************************************************
