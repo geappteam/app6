@@ -12,7 +12,7 @@
 
 #include "SDRAM.h"
 
-void record();
-void play();
+void handleRecord();
+void handlePlay();
 
 #endif /* INCLUDES_PLAYBACK_H_ */

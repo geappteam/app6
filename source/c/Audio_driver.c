@@ -33,6 +33,7 @@ extern int ulaw2int(unsigned char log);
 
 extern bool isRecording;
 extern bool isPlaying;
+extern bool flagInt11;
 
 volatile unsigned inData;
 volatile unsigned outData;
@@ -190,6 +191,7 @@ uint8_t saturateByte(uint8_t data){
 interrupt void c_int11(void)
 {
     flagAIC = true;
+    flagInt11 = true;
 	return;
 }
 

@@ -48,6 +48,7 @@
 extern void vectors();   // Vecteurs d'interruption
 
 extern bool isRecording;
+extern bool isPlaying;
 extern unsigned int inData;
 extern unsigned int outData;
 extern volatile bool flagAIC;
@@ -86,7 +87,6 @@ void main()
 
 	while(1)
 	{	
-
 	    if(flagAIC){
 	        sendByteUART(aicToUart(input_right_sample())); //MIC
 	        output_sample(outData);
@@ -110,16 +110,15 @@ void main()
         }
 
         //Bonus features
-        //Turn on other telephone's LED on
-        //TODO...
-
         // Recording
         if((DSK6713_DIP_get(DIP1) && !DSK6713_DIP_get(DIP2)) || isRecording)
-            record();
+            handleRecord();
 
         // Playing
-        if(DSK6713_DIP_get(DIP2) && !DSK6713_DIP_get(DIP1))
-            play();
+        if((DSK6713_DIP_get(DIP2) && !isRecording) || isPlaying)
+            handlePlay();
+        else
+            isPlaying = false;
 	}
 }
 
@@ -131,7 +130,6 @@ static void initAll(void){
     DSK6713_init();
     DSK6713_LED_init();
     DSK6713_DIP_init();
-
 
     Audio_init();
 
