@@ -11,6 +11,7 @@
 #include <csl_mcbsp.h>
 #include <dsk6713.h>
 #include <dsk6713_aic23.h>
+#include "addresses.h"
 
 /***************************************************************************
 	Include Module Header :
@@ -187,6 +188,7 @@ void SPI_init()
     }
 
     IRQ_enable(IRQ_EVT_EXTINT4);
+    GPPOL = 0xFFFF;
     flagUART = false;
 
     /* enable NMI and GI */
