@@ -85,7 +85,7 @@ MCBSP_Config MCBSP_SPI_Config = {
     MCBSP_FMKS(SRGR, FSGM, DEFAULT)         |
     MCBSP_FMKS(SRGR, FPER, DEFAULT)         |
     MCBSP_FMKS(SRGR, FWID, DEFAULT)         |
-    MCBSP_FMKS(SRGR, CLKGDV, OF(32)),           // Min SCLK period is 238 ns -> rounding to 300 ns
+    MCBSP_FMKS(SRGR, CLKGDV, OF(64)),           // Min SCLK period is 238 ns -> rounding to 600 ns
 
     MCBSP_MCR_DEFAULT,
     MCBSP_RCER_DEFAULT,

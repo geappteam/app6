@@ -50,8 +50,8 @@
 	Global variables declaration :
 ***************************************************************************/
 
-EXTERN volatile unsigned micReading;
-EXTERN volatile unsigned speakerValue;
+EXTERN volatile short micReading;
+EXTERN volatile int speakerValue;
 
 EXTERN volatile bool flagAIC;
 

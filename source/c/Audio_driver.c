@@ -95,52 +95,41 @@ void Audio_init(void)
 }
 
 int uartToAIC(uint8_t uartDataByte){
-    int aicDataMSB, aicDataLSB = 0;
+    int aicData;
 
     if(uartDataByte == 0xFE)
         DSK6713_LED_on(LED1);
     else if(uartDataByte == 0xFF)
         DSK6713_LED_off(LED1);
 
-    if(DSK6713_DIP_get(DIP0)){
+    if(DSK6713_DIP_get(DIP0))
+    {
         DSK6713_LED_on(LED0);
-        flagCompanding = true;
+
+        aicData = ulaw2int(uartDataByte) << 2;      //Transform 8 bits to 14 <<2 bits with sign extension bits
     }
     else
+    {
         DSK6713_LED_off(LED0);
 
-    if(flagCompanding){
-        aicDataLSB = ulaw2int(uartDataByte);          //Transform 8 bits to 14 bits with sign extension bits
-        aicDataLSB = aicDataLSB << 16;                  //Ignore 16 bits MSB of sign extension
-        aicDataLSB = 16 >> aicDataLSB;                 //Return 32 bits with 16 bits MSB and LSB equal for output_sample()
-        flagCompanding = false;
+        aicData =  (((int)uartDataByte)-128) << 8;  //Transform 8 bits to 16 bits (8 bits becoming MSB bits of 16 bits)
     }
-    else
-        aicDataLSB = (int)(aicDataLSB + uartDataByte) << 8;  //Transform 8 bits to 16 bits (8 bits becoming MSB bits of 16 bits)
 
     //  Return 32 bits with 16 bits MSB and LSB equal for output_sample()
     //  OR
     //  one 16 bits is the recording (MSB for left side)
-    if(isPlaying)
-        aicDataMSB = processReadingInSDRAM();
-    else
-        aicDataMSB = (aicDataLSB << 16);
-
-    if(isRecording)
-        processSavingInSDRAM((short)aicDataLSB);
-
-    return _add2(aicDataMSB, aicDataLSB);
+//    if(isPlaying)
+//        aicDataMSB = processReadingInSDRAM();
+//    else
+//        aicDataMSB = (aicDataLSB << 16);
+//
+//    if(isRecording)
+//        processSavingInSDRAM((short)aicDataLSB);
+//
+    return aicData;
 }
 
 uint8_t aicToUart(short aicData){
-    uint8_t uartData = 0;
-
-    if(DSK6713_DIP_get(DIP0)){
-        DSK6713_LED_on(LED0);
-        flagCompanding = true;
-    }
-    else
-        DSK6713_LED_off(LED0);
 
     if(previousCommute != flagRS232){
         if(flagRS232)
@@ -148,27 +137,30 @@ uint8_t aicToUart(short aicData){
         else
             DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) & ~DC_CNTL0));
         previousCommute = flagRS232;
-        DSK6713_waitusec(100);          //DSP is too fast compared to relay's actuator
+        DSK6713_waitusec(1000);          //DSP is too fast compared to relay's actuator
     }
 
+    uint8_t uartData;
+
     if(DSK6713_DIP_get(DIP1) && !flagTargetLED){
-        flagTargetLED = true;
-        uartData = 0xFE;
+            flagTargetLED = true;
+            uartData = 0xFE;
     }
     else if(!DSK6713_DIP_get(DIP1) && flagTargetLED){
         flagTargetLED = false;
         uartData = 0xFF;
     }
-    else{
-        if(flagCompanding){
-            uartData = int2ulaw(aicData);
-            flagCompanding = false;
-        }
-        else
-            uartData = (uint8_t)(aicData >> 8);
-
-        uartData = saturateByte(uartData);
+    else if(DSK6713_DIP_get(DIP0)){
+        DSK6713_LED_on(LED0);
+        uartData = int2ulaw((aicData + 2) >> 2);
     }
+    else
+    {
+        DSK6713_LED_off(LED0);
+        uartData = (uint8_t)(((aicData + 0x80) >> 8)+128);
+    }
+
+    uartData = saturateByte(uartData);
 
     //Return 8 bits unsigned for a write by SPI
     return uartData;

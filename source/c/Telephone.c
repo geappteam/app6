@@ -103,7 +103,6 @@ void main()
         if(DSK6713_DIP_get(DIP2)){
 
         }
-
 	}
 }
 
