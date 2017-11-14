@@ -10,10 +10,8 @@
 ***************************************************************************/
 
 // Used modules headers
-#include "module_example.h"
 #include "SPI_driver.h"
 #include "Audio_driver.h"
-#include "playback.h"
 #include "C6713Helper_UdeS.h"
 
 // standard libraries 
@@ -44,7 +42,6 @@
 ****************************************************************************/
 
 // déclaration des contenus utilisés ici mais définis ailleurs
-
 extern void vectors();   // Vecteurs d'interruption
 
 extern bool isRecording;
@@ -52,8 +49,9 @@ extern bool isPlaying;
 extern unsigned int inData;
 extern unsigned int outData;
 extern volatile bool flagAIC;
-extern volatile bool flagRS232;
+extern bool flagRS232;
 extern volatile bool flagUART;
+
 
 /****************************************************************************
 	Private Types :
@@ -88,13 +86,12 @@ void main()
 	while(1)
 	{	
 	    if(flagAIC){
-	        sendByteUART(aicToUart(input_right_sample())); //MIC
-	        output_sample(outData);
+	        sendByteUART(aicToUart(micReading)); //MIC
 	        flagAIC = false;
 	    }
 
 	    if (flagUART) {
-	        outData = uartToAIC(readByteUART());
+	        speakerValue = uartToAIC(readByteUART());
 	        flagUART = false;
 	    }
 
@@ -132,8 +129,9 @@ static void initAll(void){
     DSK6713_DIP_init();
 
     Audio_init();
+    DSK6713_waitusec(100);
 
-    SPI_init(); // Must be called after audio init because it resets McBSP0's handle
+    SPI_init();
 }
 
 /****************************************************************************

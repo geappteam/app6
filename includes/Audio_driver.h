@@ -50,8 +50,10 @@
 	Global variables declaration :
 ***************************************************************************/
 
-// look at example for EXTERN pattern
+EXTERN volatile unsigned micReading;
+EXTERN volatile unsigned speakerValue;
 
+EXTERN volatile bool flagAIC;
 
 /***************************************************************************		
 	Function prototype :
