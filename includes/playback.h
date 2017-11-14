@@ -9,10 +9,12 @@
 #define INCLUDES_PLAYBACK_H_
 
 #include <stdbool.h>
+#include <stdio.h>
+#include <dsk6713.h>
 
 #include "SDRAM.h"
 
-void record();
-void play();
+void handleRecord();
+void handlePlay();
 
 #endif /* INCLUDES_PLAYBACK_H_ */

@@ -31,6 +31,7 @@ extern int ulaw2int(unsigned char log);
 
 extern bool isRecording;
 extern bool isPlaying;
+extern bool flagInt11;
 
 bool flagRS232;
 bool flagCompanding;
@@ -40,11 +41,6 @@ bool flagTargetLED;
 /****************************************************************************
 	Private macros and constants :
 ****************************************************************************/
-#define DSK6713_AIC23_INPUT_MIC 0x0015
-#define DIP0 0
-#define LED0 0
-#define DIP1 1
-#define LED1 1
 
 /****************************************************************************
 	Private Types :
@@ -183,6 +179,7 @@ interrupt void c_int11(void)
     output_sample(speakerValue | (speakerValue << 16));
 
     flagAIC = true;
+    flagInt11 = true;
 	return;
 }
 

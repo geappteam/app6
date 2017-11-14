@@ -13,6 +13,7 @@
 #include "SPI_driver.h"
 #include "Audio_driver.h"
 #include "C6713Helper_UdeS.h"
+#include "playback.h"
 
 // standard libraries 
 #include <csl.h>
@@ -30,18 +31,18 @@
 //vos  #defines ou const int blablabla
 //unique à ce fichier
 
-#define LED2 2
-#define LED3 3
-
-#define DIP2 2
-#define DIP3 3
-
 /****************************************************************************
 	Extern content declaration :
 ****************************************************************************/
 
 // déclaration des contenus utilisés ici mais définis ailleurs
+extern void vectors();   // Vecteurs d'interruption
 
+extern bool isRecording;
+extern bool isPlaying;
+extern unsigned int inData;
+extern unsigned int outData;
+extern volatile bool flagAIC;
 extern bool flagRS232;
 extern volatile bool flagUART;
 
@@ -100,9 +101,15 @@ void main()
         }
 
         //Bonus features
-        if(DSK6713_DIP_get(DIP2)){
+        // Recording
+        if((DSK6713_DIP_get(DIP1) && !DSK6713_DIP_get(DIP2)) || isRecording)
+            handleRecord();
 
-        }
+        // Playing
+        if((DSK6713_DIP_get(DIP2) && !isRecording) || isPlaying)
+            handlePlay();
+        else
+            isPlaying = false;
 	}
 }
 
