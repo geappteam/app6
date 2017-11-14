@@ -11,9 +11,7 @@ bool isRecording = false;
 bool isPlaying = false;
 bool flagInt11 = false;
 int counter = 0;
-bool GPIO9_toggler = false;
-
-GPIO_Handle hGpio;
+bool toggler = false;
 
 void handleRecord(){
     if(!isRecording){
@@ -27,15 +25,18 @@ void handleRecord(){
           flagInt11 = false;
           if(counter % 1600 == 0){
 
-              GPIO9_toggler = !GPIO9_toggler;
-              GPIO_pinWrite(hGpio,GPIO_PIN9,GPIO9_toggler);
+              toggler = !toggler;
+              if(toggler)
+                  DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) | DC_CNTL1));
+              else
+                  DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) & ~DC_CNTL1));
           }
 
           ++counter;
 
           if(counter >= 160000){
               isRecording = false;
-              GPIO_pinWrite(hGpio,GPIO_PIN9, 0);
+              DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) & ~DC_CNTL1));
               setEndOfLastRecordingAddress();
               counter = 0;
               printf("\nEND RECORDING\n\n");
@@ -46,14 +47,14 @@ void handleRecord(){
 void handlePlay(){
     if(!isPlaying){
         isPlaying = true;
-        GPIO_pinWrite(hGpio,GPIO_PIN9, 1);
+        DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) | DC_CNTL1));
         resetSDRAMIterator();
         printf("\nBEGIN PLAYING\n\n");
     }
 
     else if(getSDRAMAddressIt() > getEndOfLastRecordingAddress()){
         isPlaying = false;
-        GPIO_pinWrite(hGpio,GPIO_PIN9, 0);
+        DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) & ~DC_CNTL1));
         printf("\nEND PLAYING\n\n");
     }
 }

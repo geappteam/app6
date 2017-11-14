@@ -10,7 +10,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
-#include <csl_gpio.h>
+#include <dsk6713.h>
 
 #include "SDRAM.h"
 

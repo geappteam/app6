@@ -46,7 +46,6 @@ extern volatile bool flagAIC;
 extern bool flagRS232;
 extern volatile bool flagUART;
 
-extern GPIO_Handle hGpio;
 
 /****************************************************************************
 	Private Types :
@@ -127,10 +126,6 @@ static void initAll(void){
     DSK6713_waitusec(100);
 
     SPI_init();
-
-    hGpio = GPIO_open(GPIO_DEV0, GPIO_OPEN_RESET);
-    GPIO_pinEnable(hGpio, GPIO_PIN9);
-    GPIO_pinDirection(hGpio,GPIO_PIN9,GPIO_OUTPUT);
 }
 
 /****************************************************************************
