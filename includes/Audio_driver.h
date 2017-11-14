@@ -38,16 +38,6 @@
 //#define something something_else
 #define DSK6713_AIC23_INPUT_MIC 0x0015
 
-#define LED0 0
-#define LED1 1
-#define LED2 2
-#define LED3 3
-
-#define DIP0 0
-#define DIP1 1
-#define DIP2 2
-#define DIP3 3
-
 /***************************************************************************
 	Types declaration here :
 ***************************************************************************/

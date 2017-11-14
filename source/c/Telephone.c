@@ -14,6 +14,7 @@
 #include "Audio_driver.h"
 #include "C6713Helper_UdeS.h"
 #include "playback.h"
+#include "Relay_driver.h"
 
 // standard libraries 
 #include <csl.h>
@@ -35,16 +36,8 @@
 	Extern content declaration :
 ****************************************************************************/
 
-// déclaration des contenus utilisés ici mais définis ailleurs
-extern void vectors();   // Vecteurs d'interruption
-
 extern bool isRecording;
 extern bool isPlaying;
-extern unsigned int inData;
-extern unsigned int outData;
-extern volatile bool flagAIC;
-extern bool flagRS232;
-extern volatile bool flagUART;
 
 
 /****************************************************************************
@@ -89,27 +82,18 @@ void main()
 	        flagUART = false;
 	    }
 
-        if(DSK6713_DIP_get(DIP3)){
-            flagRS232 = false;
-            DSK6713_LED_on(LED3);
-            DSK6713_LED_off(LED2);
-        }
-        else{
-            flagRS232 = true;
-            DSK6713_LED_on(LED2);
-            DSK6713_LED_off(LED3);
-        }
+	    RELAY_update();
 
-        //Bonus features
-        // Recording
-        if((DSK6713_DIP_get(DIP1) && !DSK6713_DIP_get(DIP2)) || isRecording)
-            handleRecord();
-
-        // Playing
-        if((DSK6713_DIP_get(DIP2) && !isRecording) || isPlaying)
-            handlePlay();
-        else
-            isPlaying = false;
+//        //Bonus features
+//        // Recording
+//        if((DSK6713_DIP_get(DIP1) && !DSK6713_DIP_get(DIP2)) || isRecording)
+//            handleRecord();
+//
+//        // Playing
+//        if((DSK6713_DIP_get(DIP2) && !isRecording) || isPlaying)
+//            handlePlay();
+//        else
+//            isPlaying = false;
 	}
 }
 
@@ -121,6 +105,8 @@ static void initAll(void){
     DSK6713_init();
     DSK6713_LED_init();
     DSK6713_DIP_init();
+
+    RELAY_init();
 
     Audio_init();
     DSK6713_waitusec(100);

@@ -13,6 +13,7 @@
 #include <dsk6713_led.h>
 #include <dsk6713_dip.h>
 #include "playback.h"
+#include "io_constants.h"
 
 /***************************************************************************
 	Include Module Header :
@@ -126,15 +127,6 @@ int uartToAIC(uint8_t uartDataByte){
 }
 
 uint8_t aicToUart(short aicData){
-
-    if(previousCommute != flagRS232){
-        if(flagRS232)
-            DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) | DC_CNTL0));
-        else
-            DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) & ~DC_CNTL0));
-        previousCommute = flagRS232;
-        DSK6713_waitusec(1000);          //DSP is too fast compared to relay's actuator
-    }
 
     uint8_t uartData;
 

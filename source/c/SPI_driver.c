@@ -121,6 +121,7 @@ const Uint32 SPI_READ_DATA = 0x0000;
 #define PARITY_ENABLE 5
 #define WORD_LENGHT 4
 #define UART_BAUD_RATE_DIV 0
+#define DOUT 1<<15
 
 const Uint32 MAX3111_Config =
     0   << N_FIFO_ENABLE |
@@ -201,7 +202,8 @@ void sendByteUART(unsigned char data)
     while(! MCBSP_xrdy(SPI_PortHandle));
     MCBSP_write(SPI_PortHandle, SPI_WRITE_DATA | data);
     while(! MCBSP_rrdy(SPI_PortHandle));
-    MCBSP_read(SPI_PortHandle);
+    if (MCBSP_read(SPI_PortHandle) & DOUT)
+        flagUART = true;
 }
 
 unsigned char readByteUART()
