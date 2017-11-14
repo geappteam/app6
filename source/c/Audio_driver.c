@@ -72,7 +72,6 @@ void Audio_init(void)
     //DSK6713_init(); //Initialization might be already done by comm_intr
 
     micReading = 0;
-    speakerValue = 0;
     flagAIC = false;
     flagCompanding = false;
     flagRS232 = false;
@@ -131,7 +130,7 @@ uint8_t aicToUart(short aicData){
 interrupt void c_int11(void)
 {
     micReading = input_right_sample();
-    output_sample(speakerValue);
+    output_sample(finalSpeakerValue);
 
     flagAIC = true;
     flagInt11 = true;

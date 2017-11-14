@@ -49,8 +49,7 @@
 ***************************************************************************/
 
 EXTERN volatile short micReading;
-EXTERN volatile int speakerValue;
-
+EXTERN volatile int finalSpeakerValue;
 EXTERN volatile bool flagAIC;
 
 /***************************************************************************		

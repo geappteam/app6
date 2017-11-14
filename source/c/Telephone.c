@@ -55,6 +55,7 @@ extern bool hasRecordedOnce;
 ****************************************************************************/
 
 // Use static keyword here
+int speakerValue;
 
 /****************************************************************************
 	Main program private functions prototypes :
@@ -73,7 +74,6 @@ void main()
     initAll();
 
     int speakerValueBuffer = 0;
-    short temp_speakerValueBuffer = 0;
 
 	while(1)
 	{	
@@ -91,15 +91,16 @@ void main()
 
 	        // To ignore 16 bits MSB of sign extension
 	        speakerValue = speakerValue << 16;
-	        speakerValue = (speakerValue | speakerValue >> 16);
+	        speakerValue = speakerValue | ((speakerValue >> 16) & 0xFFFF);
 
 	        if(isPlaying)
-                speakerValue = (speakerValue >> 16 | (int)processReadingInSDRAM() << 16);
+                speakerValue = (int)processReadingInSDRAM() << 16 | ((speakerValue >> 16) & 0xFFFF);
 	        else if(isRecording){
 	            speakerValueBuffer = speakerValue >> 16;
-	            temp_speakerValueBuffer = (short)speakerValueBuffer;
-	            processSavingInSDRAM(temp_speakerValueBuffer);
+	            processSavingInSDRAM(speakerValueBuffer);
 	        }
+
+	        finalSpeakerValue = speakerValue;
 
 	        flagUART = false;
 	    }
