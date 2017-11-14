@@ -13,6 +13,7 @@
 #include "SPI_driver.h"
 #include "Audio_driver.h"
 #include "C6713Helper_UdeS.h"
+#include "playback.h"
 
 // standard libraries 
 #include <csl.h>
@@ -30,13 +31,6 @@
 //vos  #defines ou const int blablabla
 //unique à ce fichier
 
-#define LED2 2
-#define LED3 3
-
-#define DIP1 1
-#define DIP2 2
-#define DIP3 3
-
 /****************************************************************************
 	Extern content declaration :
 ****************************************************************************/
@@ -52,6 +46,7 @@ extern volatile bool flagAIC;
 extern bool flagRS232;
 extern volatile bool flagUART;
 
+extern GPIO_Handle hGpio;
 
 /****************************************************************************
 	Private Types :
@@ -132,6 +127,10 @@ static void initAll(void){
     DSK6713_waitusec(100);
 
     SPI_init();
+
+    hGpio = GPIO_open(GPIO_DEV0, GPIO_OPEN_RESET);
+    GPIO_pinEnable(hGpio, GPIO_PIN9);
+    GPIO_pinDirection(hGpio,GPIO_PIN9,GPIO_OUTPUT);
 }
 
 /****************************************************************************

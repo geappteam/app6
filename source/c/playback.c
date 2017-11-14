@@ -6,11 +6,14 @@
  */
 #include "playback.h"
 
-//Global program process flags
+//Global program process
 bool isRecording = false;
 bool isPlaying = false;
 bool flagInt11 = false;
 int counter = 0;
+bool GPIO9_toggler = false;
+
+GPIO_Handle hGpio;
 
 void handleRecord(){
     if(!isRecording){
@@ -23,14 +26,16 @@ void handleRecord(){
       if(flagInt11){
           flagInt11 = false;
           if(counter % 1600 == 0){
-              //toggleLed(DEL1); TODO : Make an external LED to toggle its light
+
+              GPIO9_toggler = !GPIO9_toggler;
+              GPIO_pinWrite(hGpio,GPIO_PIN9,GPIO9_toggler);
           }
 
           ++counter;
 
           if(counter >= 160000){
               isRecording = false;
-              //DSK6713_LED_off(DEL1); TODO : Make external LED turn off its light
+              GPIO_pinWrite(hGpio,GPIO_PIN9, 0);
               setEndOfLastRecordingAddress();
               counter = 0;
               printf("\nEND RECORDING\n\n");
@@ -41,14 +46,14 @@ void handleRecord(){
 void handlePlay(){
     if(!isPlaying){
         isPlaying = true;
-        //setLed(DEL1, HIGH); TODO : Make an external LED to light its light
+        GPIO_pinWrite(hGpio,GPIO_PIN9, 1);
         resetSDRAMIterator();
         printf("\nBEGIN PLAYING\n\n");
     }
 
     else if(getSDRAMAddressIt() > getEndOfLastRecordingAddress()){
         isPlaying = false;
-        //setLed(DEL1, LOW); TODO : Make external LED turn off its light
+        GPIO_pinWrite(hGpio,GPIO_PIN9, 0);
         printf("\nEND PLAYING\n\n");
     }
 }

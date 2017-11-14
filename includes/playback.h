@@ -9,6 +9,8 @@
 #define INCLUDES_PLAYBACK_H_
 
 #include <stdbool.h>
+#include <stdio.h>
+#include <csl_gpio.h>
 
 #include "SDRAM.h"
 
