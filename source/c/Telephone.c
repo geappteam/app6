@@ -15,6 +15,7 @@
 #include "C6713Helper_UdeS.h"
 #include "playback.h"
 #include "Relay_driver.h"
+#include "Remote_LED_driver.h"
 
 // standard libraries 
 #include <csl.h>
@@ -73,12 +74,16 @@ void main()
 	while(1)
 	{	
 	    if(flagAIC){
-	        sendByteUART(aicToUart(micReading)); //MIC
+	        uint8_t toSendByte = aicToUart(micReading);
+	        RLED_overwriteMessage(&toSendByte);
+	        sendByteUART(toSendByte); //MIC
 	        flagAIC = false;
 	    }
 
 	    if (flagUART) {
-	        speakerValue = uartToAIC(readByteUART());
+	        unsigned char spiReceivedByte = readByteUART();
+	        RLED_checkAndApply(spiReceivedByte);
+	        speakerValue = uartToAIC(spiReceivedByte);
 	        flagUART = false;
 	    }
 
@@ -112,6 +117,8 @@ static void initAll(void){
     DSK6713_waitusec(100);
 
     SPI_init();
+
+    RLED_init();
 }
 
 /****************************************************************************

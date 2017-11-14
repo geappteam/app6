@@ -63,7 +63,6 @@ EXTERN void Audio_init(void);
 // ajoutez vos prototype de fonction ici
 int uartToAIC(uint8_t uartDataByte);
 uint8_t aicToUart(short aicData);
-uint8_t saturateByte(uint8_t data);
 
 #undef AUDIO_DRIVER_MODULE_IMPORT
 

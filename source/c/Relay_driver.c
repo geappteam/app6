@@ -19,7 +19,7 @@ void setRelayMode(RelayMode mode)
 
     if (mode == RS_232)
     {
-        DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) | DC_CNTL0));
+        DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) & ~DC_CNTL0));
         DSK6713_LED_on(RS_232_LED);
         DSK6713_LED_off(RS_485_LED);
         lastMode = RS_232;
@@ -27,7 +27,7 @@ void setRelayMode(RelayMode mode)
     }
     else
     {
-        DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) & ~DC_CNTL0));
+        DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) | DC_CNTL0));
         DSK6713_LED_on(RS_485_LED);
         DSK6713_LED_off(RS_232_LED);
         lastMode = RS_485;

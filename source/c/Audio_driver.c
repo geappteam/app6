@@ -94,11 +94,6 @@ void Audio_init(void)
 int uartToAIC(uint8_t uartDataByte){
     int aicData;
 
-    if(uartDataByte == 0xFE)
-        DSK6713_LED_on(LED1);
-    else if(uartDataByte == 0xFF)
-        DSK6713_LED_off(LED1);
-
     if(DSK6713_DIP_get(DIP0))
     {
         DSK6713_LED_on(LED0);
@@ -130,15 +125,7 @@ uint8_t aicToUart(short aicData){
 
     uint8_t uartData;
 
-    if(DSK6713_DIP_get(DIP1) && !flagTargetLED){
-            flagTargetLED = true;
-            uartData = 0xFE;
-    }
-    else if(!DSK6713_DIP_get(DIP1) && flagTargetLED){
-        flagTargetLED = false;
-        uartData = 0xFF;
-    }
-    else if(DSK6713_DIP_get(DIP0)){
+    if(DSK6713_DIP_get(DIP0)){
         DSK6713_LED_on(LED0);
         uartData = int2ulaw((aicData + 2) >> 2);
     }
@@ -148,17 +135,8 @@ uint8_t aicToUart(short aicData){
         uartData = (uint8_t)(((aicData + 0x80) >> 8)+128);
     }
 
-    uartData = saturateByte(uartData);
-
     //Return 8 bits unsigned for a write by SPI
     return uartData;
-}
-
-uint8_t saturateByte(uint8_t data){
-    if(data >= 0xFE)
-        return 0xFD;
-    else
-        return data;
 }
 
 /****************************************************************************
