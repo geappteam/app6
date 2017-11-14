@@ -82,10 +82,6 @@ void Audio_init(void)
     comm_intr(DSK6713_AIC23_FREQ_16KHZ, DSK6713_AIC23_INPUT_MIC); //Because 230,4kbauds/s for UART (11 bauds)
     IRQ_globalDisable();
 
-    /*DSK6713_AIC23_CodecHandle hCodec;
-    hCodec = DSK6713_AIC23_openCodec(0, &config);
-    DSK6713_AIC23_config(hCodec, config);*/
-
     flagAIC = false;
 
 	return;
@@ -94,7 +90,7 @@ void Audio_init(void)
 int uartToAIC(uint8_t uartDataByte){
     int aicData;
 
-    if(DSK6713_DIP_get(DIP0))
+    if(!DSK6713_DIP_get(DIP0))
     {
         DSK6713_LED_on(LED0);
 
@@ -107,17 +103,6 @@ int uartToAIC(uint8_t uartDataByte){
         aicData =  (((int)uartDataByte)-128) << 8;  //Transform 8 bits to 16 bits (8 bits becoming MSB bits of 16 bits)
     }
 
-    //  Return 32 bits with 16 bits MSB and LSB equal for output_sample()
-    //  OR
-    //  one 16 bits is the recording (MSB for left side)
-//    if(isPlaying)
-//        aicDataMSB = processReadingInSDRAM();
-//    else
-//        aicDataMSB = (aicDataLSB << 16);
-//
-//    if(isRecording)
-//        processSavingInSDRAM((short)aicDataLSB);
-//
     return aicData;
 }
 
@@ -125,7 +110,7 @@ uint8_t aicToUart(short aicData){
 
     uint8_t uartData;
 
-    if(DSK6713_DIP_get(DIP0)){
+    if(!DSK6713_DIP_get(DIP0)){
         DSK6713_LED_on(LED0);
         uartData = int2ulaw((aicData + 2) >> 2);
     }
@@ -146,7 +131,7 @@ uint8_t aicToUart(short aicData){
 interrupt void c_int11(void)
 {
     micReading = input_right_sample();
-    output_sample(speakerValue | (speakerValue << 16));
+    output_sample(speakerValue);
 
     flagAIC = true;
     flagInt11 = true;

@@ -12,6 +12,7 @@ bool isPlaying = false;
 bool flagInt11 = false;
 int counter = 0;
 bool toggler = false;
+bool hasRecordedOnce = false;
 
 void handleRecord(){
     if(!isRecording){
@@ -39,6 +40,7 @@ void handleRecord(){
               DSK6713_rset(DSK6713_DC_REG, (DSK6713_rget(DSK6713_DC_REG) & ~DC_CNTL1));
               setEndOfLastRecordingAddress();
               counter = 0;
+              hasRecordedOnce = true;
               printf("\nEND RECORDING\n\n");
           }
       }

@@ -39,6 +39,7 @@
 
 extern bool isRecording;
 extern bool isPlaying;
+extern bool hasRecordedOnce;
 
 
 /****************************************************************************
@@ -71,6 +72,9 @@ void main()
     /* initialize the CSL and BSL library */
     initAll();
 
+    int speakerValueBuffer = 0;
+    short temp_speakerValueBuffer = 0;
+
 	while(1)
 	{	
 	    if(flagAIC){
@@ -84,6 +88,19 @@ void main()
 	        unsigned char spiReceivedByte = readByteUART();
 	        RLED_checkAndApply(spiReceivedByte);
 	        speakerValue = uartToAIC(spiReceivedByte);
+
+	        // To ignore 16 bits MSB of sign extension
+	        speakerValue = speakerValue << 16;
+	        speakerValue = (speakerValue | speakerValue >> 16);
+
+	        if(isPlaying)
+                speakerValue = (speakerValue >> 16 | (int)processReadingInSDRAM() << 16);
+	        else if(isRecording){
+	            speakerValueBuffer = speakerValue >> 16;
+	            temp_speakerValueBuffer = (short)speakerValueBuffer;
+	            processSavingInSDRAM(temp_speakerValueBuffer);
+	        }
+
 	        flagUART = false;
 	    }
 
@@ -91,14 +108,14 @@ void main()
 
 //        //Bonus features
 //        // Recording
-//        if((DSK6713_DIP_get(DIP1) && !DSK6713_DIP_get(DIP2)) || isRecording)
-//            handleRecord();
-//
-//        // Playing
-//        if((DSK6713_DIP_get(DIP2) && !isRecording) || isPlaying)
-//            handlePlay();
-//        else
-//            isPlaying = false;
+        if((!DSK6713_DIP_get(DIP1) && DSK6713_DIP_get(DIP2)) || isRecording)
+            handleRecord();
+
+        // Playing
+        if(((!DSK6713_DIP_get(DIP2) && !isRecording) || isPlaying) && hasRecordedOnce)
+            handlePlay();
+        else
+            isPlaying = false;
 	}
 }
 
